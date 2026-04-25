@@ -7,6 +7,9 @@
     "dev": "pnpm --dir frontend dev",
     "build": "pnpm --dir frontend build",
     "preview": "pnpm --dir frontend preview",
+    "check": "pnpm check:frontend && pnpm validate:math && pnpm build",
+    "check:frontend": "pnpm --dir frontend exec tsc --noEmit",
+    "validate:math": "python3 math/validate_publish.py",
     "generate:books": "python3 math/generate_books.py",
     "math": "python3 math/run.py"
   },

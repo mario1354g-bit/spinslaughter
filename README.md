@@ -147,6 +147,14 @@ frontend/build
 
 This folder is the frontend package to upload for StakeEngine frontend review.
 
+## Pre-Submission Check
+
+```bash
+pnpm check
+```
+
+This runs frontend TypeScript validation, math publish validation, and the pruned production frontend build.
+
 ## Game Features
 
 - 6 reels with `2-3-3-3-3-2` layout.
