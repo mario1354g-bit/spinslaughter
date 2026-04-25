@@ -230,6 +230,7 @@ Run the math scripts from the repo root:
 python3 math/simulate.py
 python3 math/run.py
 python3 math/validate_publish.py
+python3 math/audit_books.py
 ```
 
 The current development summary is written to:
@@ -237,6 +238,7 @@ The current development summary is written to:
 ```text
 math/library/publish_files/math_summary.json
 math/reports/publish_validation.json
+math/reports/book_audit.json
 ```
 
 ## GitHub Push

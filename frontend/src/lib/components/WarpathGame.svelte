@@ -107,6 +107,21 @@
     return formatMoneyUnits(amount, currency);
   }
 
+  function replayPayoutFromBook(book: Book | null) {
+    if (!book) return null;
+    for (let index = book.events.length - 1; index >= 0; index -= 1) {
+      const event = book.events[index];
+      if (event.type === 'finalWin') return event.amount;
+    }
+    return null;
+  }
+
+  function normalisePayoutMultiplier(value: unknown) {
+    const amount = Number(value);
+    if (!Number.isFinite(amount) || amount <= 0) return 0;
+    return Number.isInteger(amount) && amount > 50 ? amount / 100 : amount;
+  }
+
   function term(cashText: string, socialText: string) {
     return socialMode ? socialText : cashText;
   }
@@ -254,8 +269,10 @@
       const response = await fetchReplayRound(params);
       replayBook = extractBookFromReplay(response);
       replayCostMultiplier = Number(response.costMultiplier) || BOOK_MODE_COSTS[replayModeName as BookMode] || 1;
-      replayPayoutMultiplier = Number(response.payoutMultiplier) || replayBook?.payoutMultiplier || 0;
       if (!replayBook) throw new Error('Replay response did not include playable game state');
+      replayPayoutMultiplier =
+        replayPayoutFromBook(replayBook) ??
+        (normalisePayoutMultiplier(response.payoutMultiplier) || normalisePayoutMultiplier(replayBook.payoutMultiplier));
       sessionStatus = 'ready';
       replayStatus = 'ready';
       toast = 'REPLAY READY';

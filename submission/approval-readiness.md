@@ -10,6 +10,7 @@ This file tracks the repo against the StakeEngine approval checklist. It is inte
 - Math publish package exists in `math/library/publish_files`.
 - Math publish `index.json` is strict and references existing `books_*.jsonl.zst` and `lookUpTable_*.csv` files.
 - Math lookup validation passes with integer `id, probability, payoutMultiplier` rows.
+- Book payout audit passes: event indexes are sequential and every book `finalWin` matches the top-level payout multiplier.
 - Current dev-package weighted RTP by lookup:
 - `base`: `95.999998%`
 - `warpath_buy_8`: `96.000000%`
@@ -39,6 +40,7 @@ This file tracks the repo against the StakeEngine approval checklist. It is inte
 ```bash
 pnpm check
 python3 math/validate_publish.py --write math/reports/publish_validation.json
+python3 math/audit_books.py --write math/reports/book_audit.json
 ```
 
 Production-scale math generation command:

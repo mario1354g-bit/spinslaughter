@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "base",
+    "books": 4000,
+    "events": "books_base.jsonl.zst"
+  },
+  {
+    "mode": "warpath_buy_8",
+    "books": 1600,
+    "events": "books_warpath_buy_8.jsonl.zst"
+  },
+  {
+    "mode": "warpath_buy_10",
+    "books": 1600,
+    "events": "books_warpath_buy_10.jsonl.zst"
+  },
+  {
+    "mode": "warpath_buy_12",
+    "books": 1600,
+    "events": "books_warpath_buy_12.jsonl.zst"
+  }
+]
