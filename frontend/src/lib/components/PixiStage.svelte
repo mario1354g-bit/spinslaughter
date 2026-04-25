@@ -61,8 +61,14 @@
   let bestWinLevelThisSpin = 0;
   let redSymbols: Container[] = [];
 
+  export let socialMode = false;
+
   export async function ready() {
     await readyPromise;
+  }
+
+  function term(cashText: string, socialText: string) {
+    return socialMode ? socialText : cashText;
   }
 
   function emptyBoard(): Board {
@@ -611,7 +617,7 @@
     title.x = CANVAS_WIDTH / 2;
     title.y = CANVAS_HEIGHT / 2 - 42;
     const value = new Text({
-      text: `${amount.toFixed(2)}x BET`,
+      text: `${amount.toFixed(2)}x ${term('BET', 'PLAY')}`,
       style: { fontFamily: 'Impact', fontSize: 62, fill: 0xffb86b, stroke: { color: 0x000000, width: 8 }, letterSpacing: 4 }
     });
     value.anchor.set(0.5);
@@ -715,7 +721,7 @@
     title.x = panel.x;
     title.y = panel.y - 46;
     const subtitle = new Text({
-	      text: `${source === 'buy' ? `BOUGHT FEATURE ${purchaseCost}x` : 'FLARE BONUS TRIGGERED'}\nSTART x${multiplierStart} · CASCADES RAISE IT`,
+      text: `${source === 'buy' ? `FEATURE START ${purchaseCost}x` : 'FLARE BONUS TRIGGERED'}\nSTART x${multiplierStart} · CASCADES RAISE IT`,
       style: { fontFamily: 'Impact', fontSize: 50, align: 'center', fill: 0xff5b6d, stroke: { color: 0x000000, width: 8 }, letterSpacing: 3 }
     });
     subtitle.anchor.set(0.5);

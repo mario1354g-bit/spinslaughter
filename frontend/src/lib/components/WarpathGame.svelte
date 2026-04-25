@@ -385,7 +385,7 @@
     multiplierLabel = '';
     const costUnits = pendingRoundBook && runtimeMode === 'rgs' ? 0 : modeCostUnits(mode);
     if (balanceUnits < costUnits) {
-      toast = 'INSUFFICIENT BALANCE';
+      toast = term('INSUFFICIENT BALANCE', 'INSUFFICIENT CREDITS');
       toastTone = 'red';
       playing = false;
       return;
@@ -502,7 +502,7 @@
 <div class="viewport" style:width={`${viewportWidth}px`} style:height={`${viewportHeight}px`}>
   <div class="game-shell" style:transform={`translate3d(-50%, -50%, 0) scale(${scale})`}>
     <WarpathAudio />
-    <PixiStage bind:this={stage} />
+    <PixiStage bind:this={stage} {socialMode} />
 
     <div class="grain"></div>
     {#if introVisible}
@@ -572,7 +572,7 @@
 
     <footer class="controls">
       <div class="readout">
-        <span>BALANCE</span>
+        <span>{term('BALANCE', 'CREDITS')}</span>
         <strong>{display(balanceUnits)}</strong>
       </div>
       <div class="bet">
