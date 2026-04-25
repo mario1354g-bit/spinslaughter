@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import statistics
@@ -21,12 +22,35 @@ PUBLISH_DIR = ROOT / "library" / "publish_files"
 FRONTEND_BOOK_DIR = ROOT.parent / "frontend" / "static" / "books"
 
 
-MODES = {
+DEFAULT_MODES = {
     "base": (4000, None),
     "warpath_buy_8": (1600, None),
     "warpath_buy_10": (1600, None),
     "warpath_buy_12": (1600, None),
 }
+
+
+def configured_modes() -> dict[str, tuple[int, str | None]]:
+    modes = dict(DEFAULT_MODES)
+    scale = float(os.environ.get("WARPATH_BOOK_SCALE", "1"))
+    if scale <= 0:
+        raise ValueError("WARPATH_BOOK_SCALE must be greater than zero")
+    if scale != 1:
+        modes = {mode: (max(1, round(count * scale)), force) for mode, (count, force) in modes.items()}
+
+    counts = os.environ.get("WARPATH_BOOK_COUNTS")
+    if counts:
+        for item in counts.split(","):
+            mode, _, raw_count = item.partition("=")
+            mode = mode.strip()
+            if mode not in modes or not raw_count.strip().isdigit():
+                raise ValueError(f"Invalid WARPATH_BOOK_COUNTS item: {item!r}")
+            modes[mode] = (int(raw_count), modes[mode][1])
+    return modes
+
+
+MODES = configured_modes()
+COPY_FRONTEND_BOOKS = os.environ.get("WARPATH_COPY_FRONTEND_BOOKS", "1") != "0"
 
 PROBABILITY_SCALE = 1_000_000
 PAYOUT_MULTIPLIER_SCALE = 100
@@ -268,12 +292,10 @@ def main() -> None:
     config.validate()
     for directory in [BOOK_DIR, LOOKUP_DIR, PUBLISH_DIR, FRONTEND_BOOK_DIR]:
         directory.mkdir(parents=True, exist_ok=True)
-    for path in [
-        *BOOK_DIR.glob("books_*.jsonl"),
-        *BOOK_DIR.glob("books_*.jsonl.zst"),
-        *FRONTEND_BOOK_DIR.glob("books_*.jsonl"),
-        *FRONTEND_BOOK_DIR.glob("lookUpTable_*.csv"),
-    ]:
+    cleanup_paths = [*BOOK_DIR.glob("books_*.jsonl"), *BOOK_DIR.glob("books_*.jsonl.zst")]
+    if COPY_FRONTEND_BOOKS:
+        cleanup_paths.extend([*FRONTEND_BOOK_DIR.glob("books_*.jsonl"), *FRONTEND_BOOK_DIR.glob("lookUpTable_*.csv")])
+    for path in cleanup_paths:
         path.unlink()
     for path in [*LOOKUP_DIR.glob("lookUpTable_*.csv"), *LOOKUP_DIR.glob("lookUpTableIdToCriteria_*.csv"), *LOOKUP_DIR.glob("lookUpTableSegmented_*.csv")]:
         path.unlink()
@@ -325,11 +347,12 @@ def main() -> None:
         "bookFormat": "jsonl",
     }
     (BOOK_DIR / "index.json").write_text(json.dumps(frontend_index, indent=2), encoding="utf-8")
-    for path in BOOK_DIR.glob("books_*.jsonl"):
-        shutil.copy2(path, FRONTEND_BOOK_DIR / path.name)
-    for path in LOOKUP_DIR.glob("lookUpTable_*.csv"):
-        shutil.copy2(path, FRONTEND_BOOK_DIR / path.name)
-    shutil.copy2(BOOK_DIR / "index.json", FRONTEND_BOOK_DIR / "index.json")
+    if COPY_FRONTEND_BOOKS:
+        for path in BOOK_DIR.glob("books_*.jsonl"):
+            shutil.copy2(path, FRONTEND_BOOK_DIR / path.name)
+        for path in LOOKUP_DIR.glob("lookUpTable_*.csv"):
+            shutil.copy2(path, FRONTEND_BOOK_DIR / path.name)
+        shutil.copy2(BOOK_DIR / "index.json", FRONTEND_BOOK_DIR / "index.json")
     print(f"Generated {len(MODES)} book sets in {BOOK_DIR}")
     for mode, summary in summaries.items():
         print(

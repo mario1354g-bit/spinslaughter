@@ -57,10 +57,11 @@ pip install -r math/requirements.txt
 
 ## Generate Math Books
 
-Books are generated from the Python math package and copied into the frontend static book fixture folder.
+Books are generated from the Python math package. The generator writes a self-contained StakeEngine math upload package to `math/library/publish_files` and, for local no-session testing, copies uncompressed fixture books into `frontend/static/books`.
 
 ```bash
 pnpm generate:books
+python3 math/validate_publish.py
 ```
 
 Generated outputs include:
@@ -70,10 +71,25 @@ Generated outputs include:
 - `math/library/books/books_warpath_buy_10.jsonl`
 - `math/library/books/books_warpath_buy_12.jsonl`
 - `math/library/lookup_tables/lookUpTable_*.csv`
+- `math/library/publish_files/index.json`
+- `math/library/publish_files/books_*.jsonl.zst`
+- `math/library/publish_files/lookUpTable_*.csv`
 - `math/library/publish_files/config_math.json`
 - `math/library/publish_files/config_fe.json`
 - `math/library/publish_files/math_summary.json`
 - `frontend/static/books/books_*.jsonl`
+
+The committed math package is sized for development and integration testing. Before a real StakeEngine math submission, regenerate production-scale books locally using the SDK-recommended 100k+ outcomes per mode:
+
+```bash
+WARPATH_COPY_FRONTEND_BOOKS=0 \
+WARPATH_BOOK_COUNTS=base=100000,warpath_buy_8=100000,warpath_buy_10=100000,warpath_buy_12=100000 \
+python3 math/generate_books.py
+
+python3 math/validate_publish.py --write math/reports/publish_validation.json
+```
+
+Production-scale bonus books are large, so `WARPATH_COPY_FRONTEND_BOOKS=0` avoids copying massive uncompressed JSONL files into the frontend fixture folder.
 
 ## Run Locally
 
@@ -205,12 +221,14 @@ Run the math scripts from the repo root:
 ```bash
 python3 math/simulate.py
 python3 math/run.py
+python3 math/validate_publish.py
 ```
 
 The current development summary is written to:
 
 ```text
 math/library/publish_files/math_summary.json
+math/reports/publish_validation.json
 ```
 
 ## GitHub Push
@@ -236,7 +254,7 @@ Use `--public` instead of `--private` only if this game should be visible public
 ## Production Checklist
 
 - Confirm final StakeEngine integration target and deployment packaging.
-- Re-run math simulation and certification workflow.
+- Generate production-scale math books and rerun `python3 math/validate_publish.py`.
 - Replace or clear final production audio licensing.
 - Review all final art rights and generated-asset usage terms.
 - Validate desktop, iPad, and mobile viewport behavior.

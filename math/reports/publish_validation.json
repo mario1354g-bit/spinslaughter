@@ -1,0 +1,46 @@
+[
+  {
+    "mode": "base",
+    "cost": 1.0,
+    "lookupRows": 4000,
+    "bookRows": 4000,
+    "totalProbability": 4000167267,
+    "weightedPayoutMultiplier": 0.96,
+    "rtpPercentOfCost": 95.999998,
+    "events": "books_base.jsonl.zst",
+    "weights": "lookUpTable_base.csv"
+  },
+  {
+    "mode": "warpath_buy_8",
+    "cost": 80.0,
+    "lookupRows": 1600,
+    "bookRows": 1600,
+    "totalProbability": 1600135359,
+    "weightedPayoutMultiplier": 76.8,
+    "rtpPercentOfCost": 96.0,
+    "events": "books_warpath_buy_8.jsonl.zst",
+    "weights": "lookUpTable_warpath_buy_8.csv"
+  },
+  {
+    "mode": "warpath_buy_10",
+    "cost": 100.0,
+    "lookupRows": 1600,
+    "bookRows": 1600,
+    "totalProbability": 1600952241,
+    "weightedPayoutMultiplier": 96.0,
+    "rtpPercentOfCost": 96.0,
+    "events": "books_warpath_buy_10.jsonl.zst",
+    "weights": "lookUpTable_warpath_buy_10.csv"
+  },
+  {
+    "mode": "warpath_buy_12",
+    "cost": 120.0,
+    "lookupRows": 1600,
+    "bookRows": 1600,
+    "totalProbability": 1607033804,
+    "weightedPayoutMultiplier": 115.2,
+    "rtpPercentOfCost": 96.0,
+    "events": "books_warpath_buy_12.jsonl.zst",
+    "weights": "lookUpTable_warpath_buy_12.csv"
+  }
+]
