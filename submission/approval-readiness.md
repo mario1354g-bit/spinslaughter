@@ -19,6 +19,7 @@ This file tracks the repo against the StakeEngine approval checklist. It is inte
 - Buy modes greater than `2x` are behind a confirmation dialog showing real cost.
 - RGS launch parameters use the documented `sessionID`, `lang`, `device`, and `rgs_url` query keys.
 - RGS client implements `/wallet/authenticate`, `/wallet/play`, `/wallet/end-round`, and `/bet/event`.
+- RGS contract smoke test exists at `tests/rgs-contract-smoke.ts` and is included in `pnpm check`.
 - Replay mode supports replay URL parameters and displays bet amount, real cost, and result.
 - Product-facing symbol names no longer use real-world nationality/group labels.
 - Social mode wording is wired through the main UI and Pixi overlays for bet/buy/balance-style labels.

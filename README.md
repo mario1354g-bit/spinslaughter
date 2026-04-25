@@ -153,7 +153,7 @@ This folder is the frontend package to upload for StakeEngine frontend review.
 pnpm check
 ```
 
-This runs frontend TypeScript validation, math publish validation, and the pruned production frontend build.
+This runs frontend TypeScript validation, the RGS contract smoke test, math publish validation, and the pruned production frontend build.
 
 ## Game Features
 

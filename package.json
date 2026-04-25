@@ -7,11 +7,15 @@
     "dev": "pnpm --dir frontend dev",
     "build": "pnpm --dir frontend build",
     "preview": "pnpm --dir frontend preview",
-    "check": "pnpm check:frontend && pnpm validate:math && pnpm build",
+    "check": "pnpm check:frontend && pnpm test:rgs && pnpm validate:math && pnpm build",
     "check:frontend": "pnpm --dir frontend exec tsc --noEmit",
+    "test:rgs": "tsx tests/rgs-contract-smoke.ts",
     "validate:math": "python3 math/validate_publish.py",
     "generate:books": "python3 math/generate_books.py",
     "math": "python3 math/run.py"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
 }
