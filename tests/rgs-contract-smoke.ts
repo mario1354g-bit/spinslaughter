@@ -4,7 +4,9 @@ import {
   RgsClient,
   extractBookFromReplay,
   extractBookFromRound,
-  fetchReplayRound
+  fetchReplayRound,
+  readReplayLaunchParams,
+  readRgsLaunchParams
 } from '../frontend/src/lib/rgs/client.ts';
 
 const sessionID = 'smoke-session';
@@ -144,6 +146,11 @@ async function main() {
     assert.deepEqual(calls[1].body, { sessionID, amount: 1_000_000, mode: 'base' });
     assert.deepEqual(calls[2].body, { sessionID, event: '901:0:reveal' });
     assert.deepEqual(calls[3].body, { sessionID });
+    assert.equal(readRgsLaunchParams('?sessionID=abc&language=es&rgs_url=http://rgs.test').lang, 'es');
+    assert.equal(readReplayLaunchParams('?replay=true&amount=1.25&language=fr').amount, 1_250_000);
+    assert.equal(readReplayLaunchParams('?replay=true&amount=1250000&lang=de').amount, 1_250_000);
+    assert.equal(readReplayLaunchParams('?replay=true&amount=bad').amount, null);
+    assert.equal(readReplayLaunchParams('?replay=true&language=fr').lang, 'fr');
     console.log('RGS contract smoke passed');
   } finally {
     server.close();
@@ -151,4 +158,3 @@ async function main() {
 }
 
 void main();
-

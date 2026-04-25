@@ -79,6 +79,8 @@ export type RgsReplayResponse = {
   state: unknown;
 };
 
+const MONEY_SCALE = 1_000_000;
+
 export class RgsError extends Error {
   readonly status: number;
   readonly code: string;
@@ -95,7 +97,7 @@ export function readRgsLaunchParams(search = globalThis.location?.search ?? ''):
   const params = new URLSearchParams(search);
   return {
     sessionID: params.get('sessionID'),
-    lang: params.get('lang') || 'en',
+    lang: readLanguageParam(params),
     device: params.get('device') || 'desktop',
     rgsUrl: params.get('rgs_url'),
     social: params.get('social') === 'true'
@@ -104,7 +106,6 @@ export function readRgsLaunchParams(search = globalThis.location?.search ?? ''):
 
 export function readReplayLaunchParams(search = globalThis.location?.search ?? ''): RgsReplayParams {
   const params = new URLSearchParams(search);
-  const amount = Number(params.get('amount'));
   return {
     replay: params.get('replay') === 'true',
     game: params.get('game'),
@@ -113,8 +114,8 @@ export function readReplayLaunchParams(search = globalThis.location?.search ?? '
     event: params.get('event'),
     rgsUrl: params.get('rgs_url'),
     currency: params.get('currency') || 'USD',
-    amount: Number.isFinite(amount) && amount > 0 ? amount : null,
-    lang: params.get('lang') || 'en',
+    amount: readAmountParam(params),
+    lang: readLanguageParam(params),
     device: params.get('device') || 'desktop',
     social: params.get('social') === 'true'
   };
@@ -210,6 +211,18 @@ function safeJson(text: string): unknown {
   } catch {
     return {};
   }
+}
+
+function readLanguageParam(params: URLSearchParams): string {
+  return params.get('lang') || params.get('language') || 'en';
+}
+
+function readAmountParam(params: URLSearchParams): number | null {
+  const rawAmount = params.get('amount');
+  if (!rawAmount) return null;
+  const amount = Number(rawAmount);
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+  return rawAmount.includes('.') ? Math.round(amount * MONEY_SCALE) : Math.round(amount);
 }
 
 function isBookLike(value: unknown): value is Book {
