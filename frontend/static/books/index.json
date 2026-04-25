@@ -1,0 +1,17 @@
+{
+  "gameId": "warpath_reels",
+  "workingName": "Warpath Reels",
+  "modes": [
+    "base",
+    "warpath_buy_8",
+    "warpath_buy_10",
+    "warpath_buy_12"
+  ],
+  "modeCosts": {
+    "base": 1.0,
+    "warpath_buy_8": 80.0,
+    "warpath_buy_10": 100.0,
+    "warpath_buy_12": 120.0
+  },
+  "bookFormat": "jsonl"
+}

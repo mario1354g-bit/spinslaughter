@@ -1,0 +1,14 @@
+{
+  "name": "warpath-reels",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --dir frontend dev",
+    "build": "pnpm --dir frontend build",
+    "preview": "pnpm --dir frontend preview",
+    "generate:books": "python3 math/generate_books.py",
+    "math": "python3 math/run.py"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

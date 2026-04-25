@@ -1,0 +1,32 @@
+{
+  "gameId": "warpath_reels",
+  "workingName": "Warpath Reels",
+  "modes": [
+    {
+      "name": "base",
+      "cost": 1.0,
+      "events": "books_base.jsonl.zst",
+      "weights": "lookUpTable_base.csv"
+    },
+    {
+      "name": "warpath_buy_8",
+      "cost": 80.0,
+      "events": "books_warpath_buy_8.jsonl.zst",
+      "weights": "lookUpTable_warpath_buy_8.csv"
+    },
+    {
+      "name": "warpath_buy_10",
+      "cost": 100.0,
+      "events": "books_warpath_buy_10.jsonl.zst",
+      "weights": "lookUpTable_warpath_buy_10.csv"
+    },
+    {
+      "name": "warpath_buy_12",
+      "cost": 120.0,
+      "events": "books_warpath_buy_12.jsonl.zst",
+      "weights": "lookUpTable_warpath_buy_12.csv"
+    }
+  ],
+  "bookFormat": "jsonl.zst",
+  "note": "Development books generated for frontend/RGS integration testing. Optimization and certification pass still required before production."
+}

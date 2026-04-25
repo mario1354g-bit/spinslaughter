@@ -1,0 +1,412 @@
+{
+  "gameId": "warpath_reels",
+  "workingName": "Warpath Reels",
+  "rtp": 0.96,
+  "wincap": 5000,
+  "winType": "ways",
+  "numReels": 6,
+  "numRows": [
+    2,
+    3,
+    3,
+    3,
+    3,
+    2
+  ],
+  "wildSymbol": "WD",
+  "bonusTriggerSymbol": "SC",
+  "specialSymbols": {
+    "wild": [
+      "WD"
+    ],
+    "bonus": [
+      "SC"
+    ],
+    "scatter": [
+      "SC"
+    ]
+  },
+  "paytable": {
+    "LS": {
+      "3": 0.8,
+      "4": 2.5,
+      "5": 8.0,
+      "6": 30.0
+    },
+    "TO": {
+      "3": 0.55,
+      "4": 1.8,
+      "5": 5.5,
+      "6": 18.0
+    },
+    "IY": {
+      "3": 0.45,
+      "4": 1.4,
+      "5": 4.2,
+      "6": 13.0
+    },
+    "IS": {
+      "3": 0.35,
+      "4": 1.05,
+      "5": 3.2,
+      "6": 10.0
+    },
+    "WS": {
+      "3": 0.3,
+      "4": 0.85,
+      "5": 2.5,
+      "6": 8.0
+    },
+    "K": {
+      "3": 0.18,
+      "4": 0.45,
+      "5": 1.2,
+      "6": 3.2
+    },
+    "Q": {
+      "3": 0.15,
+      "4": 0.38,
+      "5": 1.0,
+      "6": 2.7
+    },
+    "J": {
+      "3": 0.12,
+      "4": 0.3,
+      "5": 0.8,
+      "6": 2.2
+    },
+    "T": {
+      "3": 0.1,
+      "4": 0.25,
+      "5": 0.65,
+      "6": 1.8
+    }
+  },
+  "modePayScale": {
+    "base": 0.93,
+    "warpath_spins": 5.5e-05,
+    "warpath_buy_8": 0.000609,
+    "warpath_buy_10": 0.000348,
+    "warpath_buy_12": 0.000233
+  },
+  "freeSpinTriggers": {
+    "3": 8,
+    "4": 10,
+    "5": 12
+  },
+  "betModes": [
+    {
+      "name": "base",
+      "cost": 1.0,
+      "rtp": 0.96,
+      "maxWin": 5000.0,
+      "isFeature": true,
+      "isBuyBonus": false,
+      "isInternalBonus": false,
+      "distributions": [
+        {
+          "criteria": "0",
+          "quota": 0.58,
+          "winCriteria": null,
+          "conditions": {
+            "reel_weights": {
+              "base": {
+                "base": 1
+              }
+            }
+          }
+        },
+        {
+          "criteria": "basegame",
+          "quota": 0.395,
+          "winCriteria": null,
+          "conditions": {
+            "reel_weights": {
+              "base": {
+                "base": 1
+              }
+            }
+          }
+        },
+        {
+          "criteria": "freegame",
+          "quota": 0.024,
+          "winCriteria": null,
+          "conditions": {
+            "reel_weights": {
+              "base": {
+                "base": 1
+              },
+              "warpath_spins": {
+                "warpath_spins": 1
+              }
+            }
+          }
+        },
+        {
+          "criteria": "wincap",
+          "quota": 0.001,
+          "winCriteria": 5000.0,
+          "conditions": {
+            "force_wincap": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "warpath_buy_8",
+      "cost": 80.0,
+      "rtp": 0.96,
+      "maxWin": 5000.0,
+      "isFeature": false,
+      "isBuyBonus": true,
+      "isInternalBonus": false,
+      "distributions": [
+        {
+          "criteria": "freegame",
+          "quota": 0.999,
+          "winCriteria": null,
+          "conditions": {
+            "reel_weights": {
+              "warpath_buy_8": {
+                "warpath_spins": 1
+              }
+            },
+            "force_freegame": true
+          }
+        },
+        {
+          "criteria": "wincap",
+          "quota": 0.001,
+          "winCriteria": 5000.0,
+          "conditions": {
+            "force_wincap": true,
+            "force_freegame": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "warpath_buy_10",
+      "cost": 100.0,
+      "rtp": 0.96,
+      "maxWin": 5000.0,
+      "isFeature": false,
+      "isBuyBonus": true,
+      "isInternalBonus": false,
+      "distributions": [
+        {
+          "criteria": "freegame",
+          "quota": 0.999,
+          "winCriteria": null,
+          "conditions": {
+            "reel_weights": {
+              "warpath_buy_10": {
+                "warpath_spins": 1
+              }
+            },
+            "force_freegame": true
+          }
+        },
+        {
+          "criteria": "wincap",
+          "quota": 0.001,
+          "winCriteria": 5000.0,
+          "conditions": {
+            "force_wincap": true,
+            "force_freegame": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "warpath_buy_12",
+      "cost": 120.0,
+      "rtp": 0.96,
+      "maxWin": 5000.0,
+      "isFeature": false,
+      "isBuyBonus": true,
+      "isInternalBonus": false,
+      "distributions": [
+        {
+          "criteria": "freegame",
+          "quota": 0.999,
+          "winCriteria": null,
+          "conditions": {
+            "reel_weights": {
+              "warpath_buy_12": {
+                "warpath_spins": 1
+              }
+            },
+            "force_freegame": true
+          }
+        },
+        {
+          "criteria": "wincap",
+          "quota": 0.001,
+          "winCriteria": 5000.0,
+          "conditions": {
+            "force_wincap": true,
+            "force_freegame": true
+          }
+        }
+      ]
+    }
+  ],
+  "summaries": {
+    "base": {
+      "mode": "base",
+      "cost": 1.0,
+      "count": 4000,
+      "totalWeight": 4000.167267,
+      "uniformRtpEstimate": 0.95304,
+      "weightedRtpEstimate": 0.96,
+      "weightedRtpPercentOfCost": 96.0,
+      "hitRate": 0.29825,
+      "weightedHitRate": 0.298279,
+      "zeroRate": 0.70175,
+      "weightedZeroRate": 0.701721,
+      "bonusTriggerRate": 0.031,
+      "maxWinRate": 0.0,
+      "averagePayout": 0.95304,
+      "medianPayout": 0.0,
+      "standardDeviation": 4.983679,
+      "maxPayout": 167.4,
+      "averageBaseWin": 0.753525,
+      "averageFreeWin": 0.199515,
+      "criteriaCounts": {
+        "basegame": 1087,
+        "0": 2789,
+        "freegame": 124
+      },
+      "eventCounts": {
+        "reveal": 5050,
+        "winInfo": 3273,
+        "setWin": 3273,
+        "cascade": 3273,
+        "escalationUpdate": 3273,
+        "setTotalWin": 4000,
+        "finalWin": 4000,
+        "wildMultiplier": 533,
+        "warpathSpinsIntro": 124,
+        "globalMultiplier": 1839,
+        "awaitSpinInput": 1050,
+        "freeSpinUpdate": 1050
+      }
+    },
+    "warpath_buy_8": {
+      "mode": "warpath_buy_8",
+      "cost": 80.0,
+      "count": 1600,
+      "totalWeight": 1600.135359,
+      "uniformRtpEstimate": 76.757463,
+      "weightedRtpEstimate": 76.8,
+      "weightedRtpPercentOfCost": 96.0,
+      "hitRate": 0.965625,
+      "weightedHitRate": 0.965628,
+      "zeroRate": 0.034375,
+      "weightedZeroRate": 0.034372,
+      "bonusTriggerRate": 0,
+      "maxWinRate": 0.0,
+      "averagePayout": 76.757463,
+      "medianPayout": 23.05,
+      "standardDeviation": 107.490336,
+      "maxPayout": 579.61,
+      "averageBaseWin": 0.0,
+      "averageFreeWin": 76.757463,
+      "criteriaCounts": {
+        "freegame": 1600
+      },
+      "eventCounts": {
+        "reveal": 14400,
+        "warpathSpinsIntro": 1600,
+        "globalMultiplier": 34171,
+        "awaitSpinInput": 12800,
+        "freeSpinUpdate": 12800,
+        "wildMultiplier": 4278,
+        "winInfo": 32571,
+        "setWin": 32571,
+        "cascade": 32571,
+        "escalationUpdate": 32571,
+        "setTotalWin": 1600,
+        "finalWin": 1600
+      }
+    },
+    "warpath_buy_10": {
+      "mode": "warpath_buy_10",
+      "cost": 100.0,
+      "count": 1600,
+      "totalWeight": 1600.952241,
+      "uniformRtpEstimate": 95.752763,
+      "weightedRtpEstimate": 96.0,
+      "weightedRtpPercentOfCost": 96.0,
+      "hitRate": 0.98875,
+      "weightedHitRate": 0.988757,
+      "zeroRate": 0.01125,
+      "weightedZeroRate": 0.011243,
+      "bonusTriggerRate": 0,
+      "maxWinRate": 0.0,
+      "averagePayout": 95.752763,
+      "medianPayout": 51.14,
+      "standardDeviation": 106.46114,
+      "maxPayout": 511.42,
+      "averageBaseWin": 0.0,
+      "averageFreeWin": 95.752763,
+      "criteriaCounts": {
+        "freegame": 1600
+      },
+      "eventCounts": {
+        "reveal": 17600,
+        "warpathSpinsIntro": 1600,
+        "globalMultiplier": 47868,
+        "awaitSpinInput": 16000,
+        "freeSpinUpdate": 16000,
+        "wildMultiplier": 4706,
+        "winInfo": 46268,
+        "setWin": 46268,
+        "cascade": 46268,
+        "escalationUpdate": 46268,
+        "setTotalWin": 1600,
+        "finalWin": 1600
+      }
+    },
+    "warpath_buy_12": {
+      "mode": "warpath_buy_12",
+      "cost": 120.0,
+      "count": 1600,
+      "totalWeight": 1607.033804,
+      "uniformRtpEstimate": 113.618625,
+      "weightedRtpEstimate": 115.2,
+      "weightedRtpPercentOfCost": 96.0,
+      "hitRate": 0.99125,
+      "weightedHitRate": 0.991288,
+      "zeroRate": 0.00875,
+      "weightedZeroRate": 0.008712,
+      "bonusTriggerRate": 0,
+      "maxWinRate": 0.0,
+      "averagePayout": 113.618625,
+      "medianPayout": 91.89,
+      "standardDeviation": 102.619112,
+      "maxPayout": 474.92,
+      "averageBaseWin": 0.0,
+      "averageFreeWin": 113.618625,
+      "criteriaCounts": {
+        "freegame": 1600
+      },
+      "eventCounts": {
+        "reveal": 20800,
+        "warpathSpinsIntro": 1600,
+        "globalMultiplier": 63164,
+        "awaitSpinInput": 19200,
+        "freeSpinUpdate": 19200,
+        "wildMultiplier": 4927,
+        "winInfo": 61564,
+        "setWin": 61564,
+        "cascade": 61564,
+        "escalationUpdate": 61564,
+        "setTotalWin": 1600,
+        "finalWin": 1600
+      }
+    }
+  }
+}

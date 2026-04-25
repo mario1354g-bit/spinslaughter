@@ -1,0 +1,54 @@
+{
+  "gameId": "warpath_reels",
+  "workingName": "Warpath Reels",
+  "modes": [
+    {
+      "name": "base",
+      "cost": 1.0,
+      "events": "books_base.jsonl.zst",
+      "weights": "lookUpTable_base.csv"
+    },
+    {
+      "name": "warpath_buy_8",
+      "cost": 80.0,
+      "events": "books_warpath_buy_8.jsonl.zst",
+      "weights": "lookUpTable_warpath_buy_8.csv"
+    },
+    {
+      "name": "warpath_buy_10",
+      "cost": 100.0,
+      "events": "books_warpath_buy_10.jsonl.zst",
+      "weights": "lookUpTable_warpath_buy_10.csv"
+    },
+    {
+      "name": "warpath_buy_12",
+      "cost": 120.0,
+      "events": "books_warpath_buy_12.jsonl.zst",
+      "weights": "lookUpTable_warpath_buy_12.csv"
+    }
+  ],
+  "bookFormat": "jsonl.zst",
+  "note": "Development books generated for frontend/RGS integration testing. Optimization and certification pass still required before production.",
+  "fileHashes": {
+    "books_warpath_buy_12.jsonl": "ea96fc17cb68995c74fbbc2578af144a5df41143b6a8c7a8de375fa2c119e972",
+    "books_warpath_buy_10.jsonl": "41954781b593d776409d12bb8c0762acff229aa74dbb305161bffd93c6355206",
+    "books_base.jsonl": "d49bdb779936e1e39e175d6edb15e02075b565f71a8dc242afb0232902666af7",
+    "books_warpath_buy_8.jsonl": "6c00b5a0fc58ac0bf1f2c9d3b0fe50f530eb2d0d7c57b6c67991c2ab53d27eb0",
+    "books_base.jsonl.zst": "bf554c149e84e4e8bc3882c4b1910fea27cc92dd312143ecaa180baafc49d458",
+    "books_warpath_buy_8.jsonl.zst": "1a6ee67fc218a5e8498b9b6a20ef3250ff8026599d75f1da89bc66adfbb20854",
+    "books_warpath_buy_10.jsonl.zst": "031c6ac142387b581e880b5123a6c2421db3db935de7b73438cd55ac35782d07",
+    "books_warpath_buy_12.jsonl.zst": "5439b8deb3b5b951b32d79790d6d33f747c9ed8bfc8d3667815c5475ad5ef077",
+    "lookUpTableSegmented_warpath_buy_10.csv": "4cf4867c59e7d52f3172552f5c09970a3e53662451bdd7120f4d23de65c591e6",
+    "lookUpTableIdToCriteria_base.csv": "9480074b5adcefe70ad9bb12f7321c120aeae3d6d0873255ba65a478dff0fdf3",
+    "lookUpTableSegmented_base.csv": "ac5aff220ef2fcbd71c8027445b81f1c376a4ce08248d46bab1b89efc6a29f14",
+    "lookUpTable_warpath_buy_10.csv": "d09c8e4e062d6def65781879ad07490b245b09aaaeeb62a346e9d6cf1386162d",
+    "lookUpTableIdToCriteria_warpath_buy_8.csv": "6e8bf60f2355acac9effbcfad518c4a8b95b527f263be049c06aef421be5b2ba",
+    "lookUpTableIdToCriteria_warpath_buy_12.csv": "6e8bf60f2355acac9effbcfad518c4a8b95b527f263be049c06aef421be5b2ba",
+    "lookUpTableSegmented_warpath_buy_8.csv": "d451f2a5cb5a369961302df2189016d505d2318e831d37576ebd6584f47bfe38",
+    "lookUpTable_warpath_buy_8.csv": "03ba41c52e28681cbd1e38e327a4d065e6eac63c9635baaa21165d7955231670",
+    "lookUpTableSegmented_warpath_buy_12.csv": "fadf47a13b835b50a7276337f7f2301a4ae99582d50e5ac4fb1b69b821f07fe4",
+    "lookUpTable_warpath_buy_12.csv": "e2845117336b10fedc7edb20fc315d56d072438296ee331af24dfd28c4661c02",
+    "lookUpTableIdToCriteria_warpath_buy_10.csv": "6e8bf60f2355acac9effbcfad518c4a8b95b527f263be049c06aef421be5b2ba",
+    "lookUpTable_base.csv": "908640a1195bfe6c9c5af5d3c5da7b95982506a1b276f2723e5e7a3c14c2dd52"
+  }
+}

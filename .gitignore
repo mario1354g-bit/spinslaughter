@@ -1,0 +1,12 @@
+node_modules/
+.svelte-kit/
+build/
+dist/
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
+.claude-flow/

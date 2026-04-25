@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "format": "mixed",
+  "music": {
+    "base": {
+      "src": "/assets/audio/oga_hope_orchestral_battle_music_bpm165.ogg",
+      "loop": true,
+      "volume": 0.24
+    },
+    "bonus": {
+      "src": "/assets/audio/oga_determined_pursuit_loop.wav",
+      "loop": true,
+      "volume": 0.28
+    }
+  },
+  "sfx": {
+    "uiClick": {
+      "src": "/assets/audio/ui_click.wav",
+      "volume": 0.29
+    },
+    "spinStart": {
+      "src": "/assets/audio/spin_start.wav",
+      "volume": 0.41
+    },
+    "cascade1": {
+      "src": "/assets/audio/cascade_1.wav",
+      "volume": 0.41
+    },
+    "cascade2": {
+      "src": "/assets/audio/cascade_2.wav",
+      "volume": 0.43
+    },
+    "cascade3": {
+      "src": "/assets/audio/cascade_3.wav",
+      "volume": 0.46
+    },
+    "wildLock": {
+      "src": "/assets/audio/wild_lock.wav",
+      "volume": 0.5
+    },
+    "multiplierRise": {
+      "src": "/assets/audio/multiplier_rise.wav",
+      "volume": 0.38
+    },
+    "featureIntro": {
+      "src": "/assets/audio/feature_intro.wav",
+      "volume": 0.55
+    },
+    "winSmall": {
+      "src": "/assets/audio/win_small.wav",
+      "volume": 0.36
+    },
+    "winBig": {
+      "src": "/assets/audio/win_big.wav",
+      "volume": 0.46
+    },
+    "winMega": {
+      "src": "/assets/audio/win_mega.wav",
+      "volume": 0.5
+    },
+    "winLegendary": {
+      "src": "/assets/audio/win_legendary.wav",
+      "volume": 0.6
+    }
+  },
+  "provenance": {
+    "currentMusicAssets": "OpenGameArt CC0 orchestral game music. Source/license documentation in README.md.",
+    "currentSfxAssets": "Deterministic local synthesized placeholders for integration.",
+    "targetModel": "ACE-Step, Apache-2.0, offline generation or commissioned/cleared music for final mastered score."
+  }
+}

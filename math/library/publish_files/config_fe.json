@@ -1,0 +1,120 @@
+{
+  "gameId": "warpath_reels",
+  "workingName": "Warpath Reels",
+  "numRows": [
+    2,
+    3,
+    3,
+    3,
+    3,
+    2
+  ],
+  "totalWays": 324,
+  "wildSymbol": "WD",
+  "bonusTriggerSymbol": "SC",
+  "specialSymbols": {
+    "wild": [
+      "WD"
+    ],
+    "bonus": [
+      "SC"
+    ],
+    "scatter": [
+      "SC"
+    ]
+  },
+  "symbols": [
+    {
+      "id": "T",
+      "name": "10",
+      "asset": "symbols/symbol_low_10.png",
+      "tier": "low"
+    },
+    {
+      "id": "J",
+      "name": "Jack",
+      "asset": "symbols/symbol_low_j.png",
+      "tier": "low"
+    },
+    {
+      "id": "Q",
+      "name": "Queen",
+      "asset": "symbols/symbol_low_q.png",
+      "tier": "low"
+    },
+    {
+      "id": "K",
+      "name": "King",
+      "asset": "symbols/symbol_low_k.png",
+      "tier": "low"
+    },
+    {
+      "id": "LS",
+      "name": "Latina Lady Soldier",
+      "asset": "symbols/symbol_high_lady_soldier.png",
+      "tier": "premium"
+    },
+    {
+      "id": "TO",
+      "name": "Old Desert Fighter",
+      "asset": "symbols/symbol_high_taliban_old.png",
+      "tier": "high"
+    },
+    {
+      "id": "IY",
+      "name": "Young Iraqi Fighter",
+      "asset": "symbols/symbol_high_iraqi_young.png",
+      "tier": "high"
+    },
+    {
+      "id": "IS",
+      "name": "Iraqi Soldier",
+      "asset": "symbols/symbol_high_iraqi_soldier.png",
+      "tier": "high"
+    },
+    {
+      "id": "WS",
+      "name": "Field Woman Soldier",
+      "asset": "symbols/symbol_high_woman_soldier.png",
+      "tier": "high"
+    },
+    {
+      "id": "WD",
+      "name": "Red Soldier Wild",
+      "asset": "symbols/symbol_wild_red_soldier.png",
+      "tier": "wild"
+    },
+    {
+      "id": "SC",
+      "name": "Warpath Flare Scatter",
+      "asset": "symbols/symbol_scatter_warpath_flare.png",
+      "tier": "scatter"
+    }
+  ],
+  "betModes": [
+    {
+      "name": "base",
+      "cost": 1.0,
+      "isFeature": true,
+      "isBuyBonus": false
+    },
+    {
+      "name": "warpath_buy_8",
+      "cost": 80.0,
+      "isFeature": false,
+      "isBuyBonus": true
+    },
+    {
+      "name": "warpath_buy_10",
+      "cost": 100.0,
+      "isFeature": false,
+      "isBuyBonus": true
+    },
+    {
+      "name": "warpath_buy_12",
+      "cost": 120.0,
+      "isFeature": false,
+      "isBuyBonus": true
+    }
+  ]
+}

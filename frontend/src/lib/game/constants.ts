@@ -1,0 +1,15 @@
+export const CANVAS_WIDTH = 1920;
+export const CANVAS_HEIGHT = 1080;
+export const ROWS_PER_REEL = [2, 3, 3, 3, 3, 2] as const;
+export const REEL_COUNT = ROWS_PER_REEL.length;
+export const SYMBOL_SIZE = 196;
+export const SYMBOL_GAP = 10;
+export const REEL_AREA_WIDTH = REEL_COUNT * SYMBOL_SIZE + (REEL_COUNT - 1) * SYMBOL_GAP;
+export const MAX_REEL_ROWS = 3;
+export const REEL_AREA_HEIGHT = MAX_REEL_ROWS * SYMBOL_SIZE + (MAX_REEL_ROWS - 1) * SYMBOL_GAP;
+export const REEL_AREA_X = (CANVAS_WIDTH - REEL_AREA_WIDTH) / 2;
+export const REEL_AREA_Y = 238;
+export const TOTAL_WAYS = 324;
+export const ASSET_PATH = '/assets';
+export const BOOK_PATH = '/books';
+export const BET_LEVELS = [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
