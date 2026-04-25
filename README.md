@@ -108,6 +108,15 @@ pnpm build
 pnpm --dir frontend preview --host 0.0.0.0 --port 4173
 ```
 
+`pnpm build` creates the StakeEngine upload package and prunes dev-only files from `frontend/build`, including local JSONL books, source sheets, screenshots, and unused audio. Production preview therefore expects real RGS/replay URL parameters. Use `pnpm dev` for no-session local book testing.
+
+If you specifically need an unpruned local preview build with static local books:
+
+```bash
+pnpm --dir frontend build:unpruned
+pnpm --dir frontend preview --host 0.0.0.0 --port 4173
+```
+
 ## Build
 
 ```bash
@@ -119,6 +128,8 @@ Static frontend output is written to:
 ```text
 frontend/build
 ```
+
+This folder is the frontend package to upload for StakeEngine frontend review.
 
 ## Game Features
 

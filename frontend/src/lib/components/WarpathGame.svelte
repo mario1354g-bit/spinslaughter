@@ -675,7 +675,7 @@
         <div class="rule-cards">
           <article>
             <b>RED SOLDIER WILD</b>
-            <span>The red Latina soldier is WILD only. It substitutes on reels 2-5 and can expand to cover the full reel.</span>
+            <span>The red soldier portrait is WILD only. It substitutes on reels 2-5 and can expand to cover the full reel.</span>
           </article>
           <article>
             <b>WARPATH FLARE SCATTER</b>
@@ -687,7 +687,73 @@
           </article>
         </div>
 
-        <div class="rules-meta">{TOTAL_WAYS} ways · pays left-to-right · 6 reels · rows 2-3-3-3-3-2</div>
+        <div class="rules-meta">{TOTAL_WAYS} ways · wins left-to-right · 6 reels · rows 2-3-3-3-3-2</div>
+
+        <section class="rules-section">
+          <h3>MODES, RTP, AND LIMITS</h3>
+          <table class="mode-table">
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>{term('Cost', 'Play Amount')}</th>
+                <th>RTP</th>
+                <th>Maximum Win</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Base</td>
+                <td>1x</td>
+                <td>96.00%</td>
+                <td>5,000x</td>
+              </tr>
+              <tr>
+                <td>8 Warpath Spins</td>
+                <td>80x</td>
+                <td>96.00%</td>
+                <td>5,000x</td>
+              </tr>
+              <tr>
+                <td>10 Warpath Spins</td>
+                <td>100x</td>
+                <td>96.00%</td>
+                <td>5,000x</td>
+              </tr>
+              <tr>
+                <td>12 Warpath Spins</td>
+                <td>120x</td>
+                <td>96.00%</td>
+                <td>5,000x</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="rules-section">
+          <h3>FEATURE RULES</h3>
+          <div class="rules-copy">
+            <p>3 Warpath Flare scatters award 8 Warpath Spins. 4 scatters award 10 Warpath Spins. 5 scatters award 12 Warpath Spins.</p>
+            <p>The Warpath Spins feature starts at x2 when triggered from the base game. Direct feature modes start at x3, x4, or x5 for the 8, 10, or 12 spin modes. Every cascade raises the global multiplier by +1.</p>
+            <p>Sticky wild reels can remain locked during Warpath Spins. The final round result and all animations are dictated by the RGS event data.</p>
+          </div>
+        </section>
+
+        <section class="rules-section">
+          <h3>UI GUIDE</h3>
+          <div class="ui-guide">
+            <span><b>Spin</b> starts a base round or advances a player-controlled Warpath Spin.</span>
+            <span><b>+ / -</b> changes the play amount using RGS-approved levels.</span>
+            <span><b>Bonus</b> opens a confirmation window for higher-{term('cost', 'play amount')} Warpath Spin modes.</span>
+            <span><b>Sound</b> enables or disables audio.</span>
+            <span><b>Info</b> opens these game rules and payout tables.</span>
+            <span><b>Spacebar</b> is bound to the spin button.</span>
+          </div>
+        </section>
+
+        <section class="rules-section">
+          <h3>SYMBOL PAYOUTS</h3>
+        </section>
+
         <table class="paytable">
           <thead>
             <tr>
@@ -709,6 +775,11 @@
             {/each}
           </tbody>
         </table>
+
+        <section class="rules-section disclaimer">
+          <h3>DISCLAIMER</h3>
+          <p>Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Stake Engine.</p>
+        </section>
       </div>
     {/if}
   </div>
@@ -1289,6 +1360,7 @@
 	    max-height: 850px;
 	    transform: translate(-50%, -50%);
 	    padding: 28px;
+	    overflow-y: auto;
 	    color: #d8c8b8;
 	    background:
 	      linear-gradient(130deg, rgba(16, 11, 9, .97), rgba(46, 16, 12, .96)),
@@ -1364,6 +1436,87 @@
 	    font-weight: 900;
 	    letter-spacing: 3px;
 	    text-transform: uppercase;
+	  }
+
+	  .rules-section {
+	    margin: 18px 0;
+	  }
+
+	  .rules-section h3 {
+	    margin: 0 0 10px;
+	    color: #ff9c5a;
+	    font-size: 18px;
+	    font-weight: 1000;
+	    letter-spacing: 4px;
+	  }
+
+	  .rules-copy {
+	    display: grid;
+	    gap: 8px;
+	    padding: 16px;
+	    background: rgba(6, 5, 4, .68);
+	    border: 1px solid rgba(160, 74, 42, .42);
+	  }
+
+	  .rules-copy p,
+	  .disclaimer p {
+	    margin: 0;
+	    color: #c6b7a8;
+	    font-size: 17px;
+	    line-height: 1.35;
+	  }
+
+	  .mode-table {
+	    width: 100%;
+	    border-collapse: collapse;
+	    background: rgba(5, 4, 4, .72);
+	    border: 1px solid rgba(160, 74, 42, .5);
+	  }
+
+	  .mode-table th,
+	  .mode-table td {
+	    padding: 9px 12px;
+	    border-bottom: 1px solid rgba(255, 255, 255, .08);
+	    color: #d3b58f;
+	    font-size: 16px;
+	    font-weight: 900;
+	    text-align: right;
+	  }
+
+	  .mode-table th:first-child,
+	  .mode-table td:first-child {
+	    text-align: left;
+	  }
+
+	  .mode-table th {
+	    color: #ff9c5a;
+	    letter-spacing: 2px;
+	    background: rgba(85, 26, 15, .72);
+	  }
+
+	  .ui-guide {
+	    display: grid;
+	    grid-template-columns: repeat(2, 1fr);
+	    gap: 10px;
+	  }
+
+	  .ui-guide span {
+	    padding: 12px 14px;
+	    color: #c2b4a7;
+	    font-size: 16px;
+	    line-height: 1.28;
+	    background: rgba(7, 6, 5, .72);
+	    border: 1px solid rgba(165, 88, 48, .38);
+	  }
+
+	  .ui-guide b {
+	    color: #ffb36d;
+	  }
+
+	  .disclaimer {
+	    padding: 16px;
+	    background: rgba(4, 3, 3, .75);
+	    border: 1px solid rgba(160, 74, 42, .46);
 	  }
 
 	  .paytable {

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && node scripts/prune-production-build.mjs",
+    "build:unpruned": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
