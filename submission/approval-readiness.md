@@ -21,6 +21,8 @@ This file tracks the repo against the StakeEngine approval checklist. It is inte
 - RGS client implements `/wallet/authenticate`, `/wallet/play`, `/wallet/end-round`, and `/bet/event`.
 - Replay mode supports replay URL parameters and displays bet amount, real cost, and result.
 - Product-facing symbol names no longer use real-world nationality/group labels.
+- Social mode wording is wired through the main UI and Pixi overlays for bet/buy/balance-style labels.
+- Game tile package scaffold exists at `submission/game-tile`.
 
 ## Submission Blockers
 
@@ -52,4 +54,3 @@ python3 math/validate_publish.py --write math/reports/publish_validation.json
 
 - Frontend upload candidate: `frontend/build`
 - Math upload candidate: `math/library/publish_files`
-
