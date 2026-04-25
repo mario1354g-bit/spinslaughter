@@ -1,6 +1,4 @@
 {
-  "gameId": "warpath_reels",
-  "workingName": "Warpath Reels",
   "modes": [
     {
       "name": "base",
@@ -26,7 +24,5 @@
       "events": "books_warpath_buy_12.jsonl.zst",
       "weights": "lookUpTable_warpath_buy_12.csv"
     }
-  ],
-  "bookFormat": "jsonl.zst",
-  "note": "Development books generated for frontend/RGS integration testing. Optimization and certification pass still required before production."
+  ]
 }

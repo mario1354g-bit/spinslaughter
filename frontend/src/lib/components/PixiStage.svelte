@@ -43,9 +43,19 @@
   const readyPromise = new Promise<void>((resolve) => {
     resolveReady = resolve;
   });
+  const textureCache = new Map<string, Texture>();
 
   const BIG_WIN_LABELS = ['BIG WIN', 'MEGA WIN', 'EPIC WIN', 'LEGENDARY WIN'];
   const BACKGROUND_ASSET = `${ASSET_PATH}/backgrounds/background_desert_futuristic_night.png`;
+  const PARTICLE_ASSETS = [
+    'blood_drop',
+    'debris_chunk',
+    'ember_particle',
+    'flare_ring',
+    'sand_grain',
+    'smoke_puff',
+    'spark'
+  ].map((name) => `${ASSET_PATH}/particles/${name}.png`);
   let bigWinShownThisSpin = false;
   let bestWinAmountThisSpin = 0;
   let bestWinLevelThisSpin = 0;
@@ -102,7 +112,12 @@
   }
 
   function textureFor(symbol: string): Texture {
-    return Texture.from(SYMBOLS[symbol]?.asset ?? SYMBOLS.T.asset);
+    const asset = SYMBOLS[symbol]?.asset ?? SYMBOLS.T.asset;
+    return textureCache.get(asset) ?? Texture.from(asset);
+  }
+
+  function textureAsset(asset: string): Texture {
+    return textureCache.get(asset) ?? Texture.from(asset);
   }
 
   function isRedFocus(symbol: string) {
@@ -394,7 +409,7 @@
   }
 
   function particleTexture(name: string) {
-    return Texture.from(`${ASSET_PATH}/particles/${name}.png`);
+    return textureAsset(`${ASSET_PATH}/particles/${name}.png`);
   }
 
   function emitParticle(name: string, x: number, y: number, count: number, tint?: number) {
@@ -774,21 +789,24 @@
     renderFallbackBackground();
     currentBoard = attractBoard();
     renderBoard(currentBoard);
-    loaded = true;
-    resolveReady?.();
 
     const assets = [
       BACKGROUND_ASSET,
+      ...PARTICLE_ASSETS,
       ...Object.values(SYMBOLS).flatMap((s) => [s.asset, s.tallAsset].filter(Boolean) as string[])
     ];
     try {
       await Assets.load(assets);
+      for (const asset of assets) {
+        const texture = Assets.get(asset) as Texture | undefined;
+        if (texture) textureCache.set(asset, texture);
+      }
     } catch (error) {
       console.warn('[Warpath] Some Pixi assets failed to preload; continuing with visible fallback stage.', error);
     }
 
     bgLayer.removeChildren();
-    const bg = Sprite.from(BACKGROUND_ASSET);
+    const bg = new Sprite(textureAsset(BACKGROUND_ASSET));
     bg.width = CANVAS_WIDTH;
     bg.height = CANVAS_HEIGHT;
     const bgGrade = new ColorMatrixFilter();
@@ -817,6 +835,8 @@
       characterTakeover: (event) => characterTakeover(event.symbol, event.targetReels),
       featureIntro: (event) => featureIntro(event.mode, event.spins, event.source, event.multiplierStart, event.purchaseCost)
     });
+    loaded = true;
+    resolveReady?.();
   }
 
   onMount(() => {

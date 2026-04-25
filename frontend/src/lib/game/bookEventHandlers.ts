@@ -1,9 +1,15 @@
 import { eventEmitter } from './eventEmitter';
 import type { BookEvent } from './types';
 
-export type BookEventContext = { bookEvents: BookEvent[] };
+export type BookEventContext = { bookEvents: BookEvent[]; autoContinueGates?: boolean };
 type Handler<T extends BookEvent = BookEvent> = (event: T, context: BookEventContext) => Promise<void> | void;
 type HandlerMap = { [K in BookEvent['type']]: Handler<Extract<BookEvent, { type: K }>> };
+
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
 
 export const bookEventHandlerMap: HandlerMap = {
   reveal: async (event) => {
@@ -68,7 +74,7 @@ export const bookEventHandlerMap: HandlerMap = {
       purchaseCost: event.purchaseCost
     });
   },
-  awaitSpinInput: async (event) => {
+  awaitSpinInput: async (event, context) => {
     eventEmitter.broadcast({
       type: 'bonusSpinGate',
       current: event.current,
@@ -77,6 +83,10 @@ export const bookEventHandlerMap: HandlerMap = {
       multiplier: event.multiplier,
       label: event.label
     });
+    if (context.autoContinueGates) {
+      await sleep(850);
+      return;
+    }
     await eventEmitter.waitFor('bonusSpinContinue');
   }
 };

@@ -35,11 +35,12 @@ async function loadWeightedBooks(mode: BookMode): Promise<{ book: Book; weight: 
     const response = await fetch(`${BOOK_PATH}/lookUpTable_${mode}.csv`);
     if (!response.ok) throw new Error(`Unable to load lookup table for ${mode}`);
     const text = await response.text();
-    const weighted = text
+    const rows = text
       .split('\n')
       .map((line) => line.trim())
-      .filter(Boolean)
-      .slice(1)
+      .filter(Boolean);
+    const dataRows = rows[0]?.toLowerCase().startsWith('id,') ? rows.slice(1) : rows;
+    const weighted = dataRows
       .map((line) => {
         const [id, weight] = line.split(',');
         const book = byId.get(Number(id));

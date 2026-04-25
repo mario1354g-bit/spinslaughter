@@ -29,6 +29,17 @@ MODES = {
 }
 
 PROBABILITY_SCALE = 1_000_000
+PAYOUT_MULTIPLIER_SCALE = 100
+
+
+def payout_to_publish_units(payout: float) -> int:
+    return max(0, round(float(payout) * PAYOUT_MULTIPLIER_SCALE))
+
+
+def publish_book(book: dict) -> dict:
+    output = dict(book)
+    output["payoutMultiplier"] = payout_to_publish_units(float(book["payoutMultiplier"]))
+    return output
 
 
 def file_sha256(path: Path) -> str:
@@ -143,13 +154,12 @@ def write_mode(mode: str, count: int, force: str | None) -> tuple[list[dict], di
         lookup_writer = csv.writer(lookup_file)
         criteria_writer = csv.writer(criteria_file)
         segmented_writer = csv.writer(segmented_file)
-        lookup_writer.writerow(["id", "probability", "payoutMultiplier"])
         criteria_writer.writerow(["id", "criteria"])
         segmented_writer.writerow(["id", "criteria", "baseGameWins", "freeGameWins", "payoutMultiplier"])
         for book in books:
-            books_file.write(json.dumps(book, separators=(",", ":")) + "\n")
+            books_file.write(json.dumps(publish_book(book), separators=(",", ":")) + "\n")
             probability = max(1, round(weights[int(book["id"])] * PROBABILITY_SCALE))
-            lookup_writer.writerow([book["id"], probability, book["payoutMultiplier"]])
+            lookup_writer.writerow([book["id"], probability, payout_to_publish_units(float(book["payoutMultiplier"]))])
             criteria_writer.writerow([book["id"], book["criteria"]])
             segmented_writer.writerow([book["id"], book["criteria"], book["baseGameWins"], book["freeGameWins"], book["payoutMultiplier"]])
     (PUBLISH_DIR / f"force_{mode}.json").write_text(json.dumps(force_data, indent=2), encoding="utf-8")
@@ -280,8 +290,6 @@ def main() -> None:
     compressed_books = compress_book_files()
     publish_book_format = "jsonl.zst" if compressed_books else "jsonl"
     index = {
-        "gameId": config.game_id,
-        "workingName": config.working_name,
         "modes": [
             {
                 "name": mode,
@@ -291,8 +299,6 @@ def main() -> None:
             }
             for mode in MODES
         ],
-        "bookFormat": publish_book_format,
-        "note": "Development books generated for frontend/RGS integration testing. Optimization and certification pass still required before production.",
     }
     (PUBLISH_DIR / "force.json").write_text(json.dumps(combined_force, indent=2), encoding="utf-8")
     (PUBLISH_DIR / "math_summary.json").write_text(json.dumps(summaries, indent=2), encoding="utf-8")

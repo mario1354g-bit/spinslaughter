@@ -6,6 +6,22 @@
   import { eventEmitter } from '$lib/game/eventEmitter';
   import { BOOK_MODE_COSTS, pickBook, type BookMode } from '$lib/game/books';
   import { playBookEvents } from '$lib/game/bookPlayer';
+  import type { Book, BookEvent } from '$lib/game/types';
+  import { formatMoneyUnits, scaledWinUnits, toMoneyUnits } from '$lib/rgs/currency';
+  import {
+    RgsClient,
+    RgsError,
+    extractBookFromReplay,
+    extractBookFromRound,
+    fetchReplayRound,
+    hasReplayParams,
+    hasRgsSession,
+    isActiveRound,
+    readReplayLaunchParams,
+    readRgsLaunchParams,
+    type RgsAuthResponse,
+    type RgsConfig
+  } from '$lib/rgs/client';
 
   type BuyOption = {
     mode: Exclude<BookMode, 'base'>;
@@ -20,6 +36,9 @@
     { mode: 'warpath_buy_10', spins: 10, scatters: 4, label: '4 SCATTERS', asset: '/assets/ui/buy_warpath_10.png' },
     { mode: 'warpath_buy_12', spins: 12, scatters: 5, label: '5 SCATTERS', asset: '/assets/ui/buy_warpath_12.png' }
   ];
+
+  const LOCAL_BALANCE_UNITS = toMoneyUnits(100000);
+  const LOCAL_BET_LEVELS = BET_LEVELS.map(toMoneyUnits);
 
   const PAYTABLE_ROWS = [
     { symbol: 'Latina Lady Soldier', values: ['0.80', '2.50', '8.00', '30.00'] },
@@ -39,10 +58,12 @@
   let viewportHeight = CANVAS_HEIGHT;
   let resizeFrame = 0;
   let playing = false;
-  let balance = 100000;
+  let balanceUnits = LOCAL_BALANCE_UNITS;
+  let currency = 'USD';
+  let betLevels = LOCAL_BET_LEVELS;
   let betIndex = 2;
-  let currentWin = 0;
-  let totalWin = 0;
+  let currentWinUnits = 0;
+  let totalWinUnits = 0;
   let winLevel = 0;
   let escalationLevel = 1;
   let freeSpinLabel = '';
@@ -57,13 +78,37 @@
   let awaitingBonusSpin = false;
   let buyMenuOpen = false;
   let selectedBuyMode: BuyOption['mode'] = BUY_OPTIONS[0].mode;
+  let rgsClient: RgsClient | null = null;
+  let runtimeMode: 'rgs' | 'local' | 'replay' = 'local';
+  let sessionStatus: 'loading' | 'ready' | 'local' | 'error' = 'loading';
+  let pendingRoundBook: Book | null = null;
+  let socialMode = false;
+  let replayMode = false;
+  let replayStatus: 'idle' | 'loading' | 'ready' | 'playing' | 'complete' | 'error' = 'idle';
+  let replayBook: Book | null = null;
+  let replayBaseBetUnits = toMoneyUnits(1);
+  let replayCostMultiplier = 1;
+  let replayPayoutMultiplier = 0;
+  let replayModeName = 'base';
 
-  $: bet = BET_LEVELS[betIndex];
+  $: betUnits = betLevels[betIndex] ?? LOCAL_BET_LEVELS[2];
+  $: activeBetUnits = replayMode ? replayBaseBetUnits : betUnits;
   $: selectedBuyOption = BUY_OPTIONS.find((option) => option.mode === selectedBuyMode) ?? BUY_OPTIONS[0];
-  $: selectedBuyCost = money(bet * BOOK_MODE_COSTS[selectedBuyOption.mode]);
+  $: selectedBuyCostUnits = modeCostUnits(selectedBuyOption.mode);
+  $: replayRealCostUnits = Math.round(replayBaseBetUnits * replayCostMultiplier);
+  $: replayPayoutUnits = scaledWinUnits(replayPayoutMultiplier, replayBaseBetUnits);
+  $: playDisabled = replayMode || ((sessionStatus === 'loading' || sessionStatus === 'error') && !awaitingBonusSpin);
 
-  function money(amount: number) {
-    return Math.round((amount + Number.EPSILON) * 100) / 100;
+  function modeCostUnits(mode: BookMode) {
+    return Math.round(betUnits * BOOK_MODE_COSTS[mode]);
+  }
+
+  function display(amount: number) {
+    return formatMoneyUnits(amount, currency);
+  }
+
+  function term(cashText: string, socialText: string) {
+    return socialMode ? socialText : cashText;
   }
 
   function getViewportSize() {
@@ -86,12 +131,12 @@
   }
 
   function adjustBet(direction: number) {
-    if (playing) return;
-    betIndex = Math.max(0, Math.min(BET_LEVELS.length - 1, betIndex + direction));
+    if (playing || betLevels.length <= 1) return;
+    betIndex = Math.max(0, Math.min(betLevels.length - 1, betIndex + direction));
   }
 
   function openBonusMenu() {
-    if (playing) return;
+    if (playing || playDisabled) return;
     eventEmitter.broadcast({ type: 'audioUnlock' });
     infoOpen = false;
     buyMenuOpen = true;
@@ -113,9 +158,13 @@
   }
 
   function enterGame() {
+    if (replayMode) {
+      void startReplay();
+      return;
+    }
     eventEmitter.broadcast({ type: 'audioUnlock' });
     introVisible = false;
-    toast = 'HUNT WILDS AND FLARES';
+    toast = sessionStatus === 'loading' ? 'CONNECTING TO RGS' : pendingRoundBook ? 'ROUND READY TO RESUME' : 'HUNT WILDS AND FLARES';
     toastTone = 'red';
   }
 
@@ -140,7 +189,7 @@
       continueBonusSpin();
       return;
     }
-    if (playing) return;
+    if (playing || playDisabled) return;
     void play('base');
   }
 
@@ -154,32 +203,202 @@
     ]);
   }
 
+  function normaliseBetLevels(config: RgsConfig) {
+    const minBet = Number(config.minBet) || 0;
+    const maxBet = Number(config.maxBet) || Number.MAX_SAFE_INTEGER;
+    const stepBet = Math.max(1, Number(config.stepBet) || 1);
+    const source = Array.isArray(config.betLevels) && config.betLevels.length > 0
+      ? config.betLevels
+      : [...LOCAL_BET_LEVELS, Number(config.defaultBetLevel)].filter(Boolean);
+    const levels = Array.from(new Set(source.map(Number)))
+      .filter((level) => Number.isFinite(level) && level >= minBet && level <= maxBet && level % stepBet === 0)
+      .sort((a, b) => a - b);
+    return levels.length > 0 ? levels : [Number(config.defaultBetLevel) || minBet || toMoneyUnits(1)];
+  }
+
+  function applyAuthResponse(response: RgsAuthResponse) {
+    balanceUnits = Number(response.balance.amount) || 0;
+    currency = response.balance.currency || currency;
+    betLevels = normaliseBetLevels(response.config);
+    const defaultBet = Number(response.config.defaultBetLevel) || betLevels[0];
+    const defaultIndex = betLevels.findIndex((level) => level === defaultBet);
+    betIndex = defaultIndex >= 0 ? defaultIndex : Math.max(0, betLevels.findIndex((level) => level >= defaultBet));
+    if (betIndex < 0) betIndex = 0;
+    socialMode = Boolean(response.config.jurisdiction?.socialCasino);
+    if (isActiveRound(response.round)) {
+      pendingRoundBook = extractBookFromRound(response.round);
+    }
+  }
+
+  async function initialiseReplay() {
+    const params = readReplayLaunchParams();
+    if (!params.replay) return false;
+    replayMode = true;
+    runtimeMode = 'replay';
+    sessionStatus = 'loading';
+    replayStatus = 'loading';
+    socialMode = params.social;
+    currency = params.currency;
+    replayBaseBetUnits = params.amount ?? toMoneyUnits(1);
+    replayModeName = params.mode ?? 'base';
+    toast = 'LOADING REPLAY';
+    toastTone = 'blue';
+    if (!hasReplayParams(params)) {
+      sessionStatus = 'error';
+      replayStatus = 'error';
+      toast = 'REPLAY URL INVALID';
+      toastTone = 'red';
+      return true;
+    }
+    try {
+      const response = await fetchReplayRound(params);
+      replayBook = extractBookFromReplay(response);
+      replayCostMultiplier = Number(response.costMultiplier) || BOOK_MODE_COSTS[replayModeName as BookMode] || 1;
+      replayPayoutMultiplier = Number(response.payoutMultiplier) || replayBook?.payoutMultiplier || 0;
+      if (!replayBook) throw new Error('Replay response did not include playable game state');
+      sessionStatus = 'ready';
+      replayStatus = 'ready';
+      toast = 'REPLAY READY';
+      toastTone = 'blue';
+    } catch (error) {
+      sessionStatus = 'error';
+      replayStatus = 'error';
+      toast = error instanceof RgsError ? `REPLAY ${error.code}` : 'REPLAY LOAD FAILED';
+      toastTone = 'red';
+    }
+    return true;
+  }
+
+  async function initialiseRgs() {
+    if (await initialiseReplay()) return;
+    const params = readRgsLaunchParams();
+    socialMode = params.social;
+    if (!hasRgsSession(params)) {
+      runtimeMode = 'local';
+      sessionStatus = 'local';
+      toast = 'LOCAL DEV MODE';
+      toastTone = 'blue';
+      return;
+    }
+    runtimeMode = 'rgs';
+    sessionStatus = 'loading';
+    rgsClient = new RgsClient(params.rgsUrl, params.sessionID);
+    try {
+      const response = await rgsClient.authenticate();
+      applyAuthResponse(response);
+      sessionStatus = 'ready';
+      toast = pendingRoundBook ? 'ROUND READY TO RESUME' : 'RGS CONNECTED';
+      toastTone = pendingRoundBook ? 'red' : 'blue';
+    } catch (error) {
+      sessionStatus = 'error';
+      toast = error instanceof RgsError && error.code === 'ERR_IS' ? 'SESSION EXPIRED' : 'RGS AUTH FAILED';
+      toastTone = 'red';
+    }
+  }
+
+  async function startReplay() {
+    if (!replayBook || playing || !['ready', 'complete'].includes(replayStatus)) return;
+    eventEmitter.broadcast({ type: 'audioUnlock' });
+    introVisible = false;
+    playing = true;
+    replayStatus = 'playing';
+    awaitingBonusSpin = false;
+    currentWinUnits = 0;
+    totalWinUnits = 0;
+    winLevel = 0;
+    freeSpinLabel = '';
+    multiplierLabel = '';
+    toast = 'REPLAY PLAYING';
+    toastTone = 'blue';
+    try {
+      await waitForStage();
+      await playBookEvents(replayBook, { autoContinueGates: true });
+      replayStatus = 'complete';
+      toast = replayPayoutUnits > 0 ? `REPLAY RESULT ${display(replayPayoutUnits)}` : 'REPLAY COMPLETE';
+      toastTone = replayPayoutUnits > 0 ? 'red' : 'blue';
+    } catch {
+      replayStatus = 'error';
+      toast = 'REPLAY FAILED';
+      toastTone = 'red';
+    } finally {
+      awaitingBonusSpin = false;
+      playing = false;
+    }
+  }
+
+  function eventProgressKey(book: Book, event: BookEvent) {
+    return `${book.id}:${event.index}:${event.type}`;
+  }
+
+  async function playRgsRound(mode: BookMode) {
+    if (!rgsClient) throw new Error('RGS client unavailable');
+    let book = pendingRoundBook;
+    let roundOpened = Boolean(book);
+    pendingRoundBook = null;
+    if (!book) {
+      const response = await rgsClient.play(betUnits, mode);
+      balanceUnits = Number(response.balance.amount) || balanceUnits;
+      currency = response.balance.currency || currency;
+      book = extractBookFromRound(response.round);
+      roundOpened = true;
+    }
+    if (!book) throw new Error('RGS round did not include playable game state');
+    try {
+      await playBookEvents(book, {
+        onEventProgress: (event) => rgsClient?.saveEvent(eventProgressKey(book, event)).catch(() => undefined)
+      });
+    } finally {
+      if (roundOpened) {
+        const endResponse = await rgsClient.endRound();
+        balanceUnits = Number(endResponse.balance.amount) || balanceUnits;
+        currency = endResponse.balance.currency || currency;
+      }
+    }
+  }
+
+  async function playLocalRound(mode: BookMode) {
+    balanceUnits = Math.max(0, balanceUnits - modeCostUnits(mode));
+    const book = await pickBook(mode);
+    await playBookEvents(book);
+  }
+
   async function play(mode: BookMode = 'base') {
     if (playing) return;
+    if (sessionStatus === 'loading') {
+      toast = 'CONNECTING TO RGS';
+      toastTone = 'blue';
+      return;
+    }
+    if (sessionStatus === 'error') {
+      toast = 'SESSION UNAVAILABLE';
+      toastTone = 'red';
+      return;
+    }
     eventEmitter.broadcast({ type: 'audioUnlock' });
     introVisible = false;
     playing = true;
     awaitingBonusSpin = false;
-    currentWin = 0;
-    totalWin = 0;
+    currentWinUnits = 0;
+    totalWinUnits = 0;
     winLevel = 0;
     freeSpinLabel = '';
     multiplierLabel = '';
-    const cost = bet * BOOK_MODE_COSTS[mode];
-    if (balance < cost) {
+    const costUnits = pendingRoundBook && runtimeMode === 'rgs' ? 0 : modeCostUnits(mode);
+    if (balanceUnits < costUnits) {
       toast = 'INSUFFICIENT BALANCE';
       toastTone = 'red';
       playing = false;
       return;
     }
-    balance = money(Math.max(0, balance - cost));
     try {
       await waitForStage();
-      const book = await pickBook(mode);
-      await playBookEvents(book);
+      if (runtimeMode === 'rgs') {
+        await playRgsRound(mode);
+      } else {
+        await playLocalRound(mode);
+      }
     } catch (error) {
-      console.error(error);
-      toast = 'BOOK LOAD FAILED';
+      toast = error instanceof RgsError ? `RGS ${error.code}` : 'ROUND FAILED';
       toastTone = 'red';
     } finally {
       awaitingBonusSpin = false;
@@ -189,6 +408,7 @@
 
   onMount(() => {
     resize();
+    void initialiseRgs();
     void stage?.ready().then(() => {
       stageReady = true;
     });
@@ -219,19 +439,19 @@
     window.addEventListener('keydown', keydown);
     unsubscribe = eventEmitter.subscribeOnMount({
       winCounter: (event) => {
-        const paid = money(event.amount * bet);
-        currentWin = paid;
-        totalWin = money(totalWin + paid);
-        balance = money(balance + paid);
+        const paid = scaledWinUnits(event.amount, activeBetUnits);
+        currentWinUnits = paid;
+        totalWinUnits += paid;
+        if (runtimeMode === 'local') balanceUnits += paid;
         winLevel = event.level;
       },
       totalWinUpdate: (event) => {
-        totalWin = money(event.amount * bet);
+        totalWinUnits = scaledWinUnits(event.amount, activeBetUnits);
       },
       finalWin: (event) => {
-        totalWin = money(event.amount * bet);
+        totalWinUnits = scaledWinUnits(event.amount, activeBetUnits);
         if (event.amount > 0) {
-          toast = `PAID ${totalWin.toFixed(2)}`;
+          toast = `${term('PAID', 'WON')} ${display(totalWinUnits)}`;
           toastTone = event.amount > 75 ? 'red' : 'amber';
         }
       },
@@ -290,7 +510,12 @@
         <img src="/assets/ui/splash_warpath_reels.png" alt="Warpath Reels" />
         <div class="intro-vignette"></div>
         <div class="intro-panel">
-          <button class="intro-button" aria-label="Enter Warpath" on:click={enterGame}></button>
+          <button
+            class="intro-button"
+            disabled={replayMode && !['ready', 'complete'].includes(replayStatus)}
+            aria-label={replayMode ? 'Play replay' : 'Enter Warpath'}
+            on:click={enterGame}
+          ></button>
           <div class="loadbar" class:ready={stageReady}><b></b></div>
         </div>
       </section>
@@ -313,6 +538,18 @@
       {toast}
     </section>
 
+    {#if replayMode}
+      <section class="replay-panel" aria-label="Replay details">
+        <span>REPLAY MODE</span>
+        <strong>{replayStatus === 'loading' ? 'LOADING EVENT' : replayStatus === 'error' ? 'EVENT UNAVAILABLE' : replayModeName.toUpperCase()}</strong>
+        <em>{term('BET', 'PLAY')} {display(replayBaseBetUnits)} · {term('REAL COST', 'REAL PLAY')} {display(replayRealCostUnits)}</em>
+        <em>RESULT {display(replayPayoutUnits)}</em>
+        <button disabled={!['ready', 'complete'].includes(replayStatus) || playing} on:click={startReplay}>
+          {replayStatus === 'complete' ? 'PLAY AGAIN' : 'PLAY REPLAY'}
+        </button>
+      </section>
+    {/if}
+
     <button class="sound-toggle" on:click={toggleSound} aria-label={soundOn ? 'Mute sound' : 'Unmute sound'}>
       {soundOn ? 'SOUND ON' : 'SOUND OFF'}
     </button>
@@ -325,45 +562,46 @@
       <section class="multiplier-stamp">GLOBAL {multiplierLabel}</section>
     {/if}
 
-    {#if currentWin > 0 || totalWin > 0}
+    {#if currentWinUnits > 0 || totalWinUnits > 0}
       <section class="win-panel level-{winLevel}">
         <span>WIN</span>
-        <strong>${currentWin.toFixed(2)}</strong>
-        <em>TOTAL ${totalWin.toFixed(2)}</em>
+        <strong>{display(currentWinUnits)}</strong>
+        <em>TOTAL {display(totalWinUnits)}</em>
       </section>
     {/if}
 
     <footer class="controls">
       <div class="readout">
         <span>BALANCE</span>
-        <strong>${balance.toFixed(2)}</strong>
+        <strong>{display(balanceUnits)}</strong>
       </div>
       <div class="bet">
-        <button on:click={() => adjustBet(-1)} disabled={playing}>-</button>
-        <div><span>BET</span><strong>${bet.toFixed(2)}</strong></div>
-        <button on:click={() => adjustBet(1)} disabled={playing}>+</button>
+        <button on:click={() => adjustBet(-1)} disabled={playing || betLevels.length <= 1}>-</button>
+        <div><span>{term('BET', 'PLAY')}</span><strong>{display(betUnits)}</strong></div>
+        <button on:click={() => adjustBet(1)} disabled={playing || betLevels.length <= 1}>+</button>
       </div>
       <button
         class="spin"
         class:spinning={playing && !awaitingBonusSpin}
         class:awaiting={awaitingBonusSpin}
+        disabled={playDisabled}
         aria-label={awaitingBonusSpin ? 'Next Warpath spin' : playing ? 'Spinning' : 'Spin'}
         on:click={handleSpinClick}
       ></button>
     </footer>
 
-    <section class="bonus-launcher" aria-label="Buy Warpath Spins">
-      <button class="bonus-button" disabled={playing} aria-label="Open bonus buy menu" on:click={openBonusMenu}>
+    <section class="bonus-launcher" aria-label={term('Buy Warpath Spins', 'Get Warpath Spins')}>
+      <button class="bonus-button" disabled={playing || playDisabled} aria-label={term('Open bonus buy menu', 'Open feature menu')} on:click={openBonusMenu}>
         <img src="/assets/ui/bonus_missile_button.png" alt="" />
       </button>
     </section>
 
     {#if buyMenuOpen}
-      <button class="modal-scrim" aria-label="Close buy feature dialog" on:click={closeBuyMenu}></button>
-      <dialog class="buy-modal" open aria-modal="true" aria-label="Buy Warpath Spins details">
+      <button class="modal-scrim" aria-label={term('Close buy feature dialog', 'Close feature dialog')} on:click={closeBuyMenu}></button>
+      <dialog class="buy-modal" open aria-modal="true" aria-label={term('Buy Warpath Spins details', 'Warpath Spins feature details')}>
         <div class="rules-header">
           <div>
-            <span>BUY FEATURE</span>
+            <span>{term('BUY FEATURE', 'GET FEATURE')}</span>
             <h2>{selectedBuyOption.spins} WARPATH SPINS</h2>
           </div>
           <button class="rules-close" on:click={closeBuyMenu}>CLOSE</button>
@@ -373,9 +611,9 @@
           <div class="buy-modal-left">
             <div class="buy-modal-preview">
               <img src={selectedBuyOption.asset} alt="" />
-              <strong>${selectedBuyCost.toFixed(2)}</strong>
+              <strong>{display(selectedBuyCostUnits)}</strong>
             </div>
-            <div class="buy-option-grid" aria-label="Choose Warpath Spins buy feature">
+            <div class="buy-option-grid" aria-label={term('Choose Warpath Spins buy feature', 'Choose Warpath Spins feature')}>
               {#each BUY_OPTIONS as option}
                 <button
                   class="buy-option-card"
@@ -384,7 +622,7 @@
                   aria-label={`Select ${option.spins} Warpath Spins`}
                 >
                   <span>{option.spins}</span>
-                  <em>${money(bet * BOOK_MODE_COSTS[option.mode]).toFixed(2)}</em>
+                  <em>{display(Math.round(betUnits * BOOK_MODE_COSTS[option.mode]))}</em>
                 </button>
               {/each}
             </div>
@@ -392,7 +630,7 @@
           <div class="buy-context-cards">
             <article>
               <b>FORCED TRIGGER</b>
-              <span>{selectedBuyOption.scatters} Warpath Flare scatters land first, then the bought bonus starts.</span>
+              <span>{selectedBuyOption.scatters} Warpath Flare scatters land first, then the feature starts.</span>
             </article>
             <article>
               <b>PLAYER-CONTROLLED SPINS</b>
@@ -407,8 +645,8 @@
 
         <div class="buy-actions">
           <button class="rules-close" on:click={closeBuyMenu}>BACK</button>
-          <button class="buy-confirm" disabled={playing || balance < selectedBuyCost} on:click={confirmBuyContext}>
-            BUY ${selectedBuyCost.toFixed(2)}
+          <button class="buy-confirm" disabled={playing || playDisabled || balanceUnits < selectedBuyCostUnits} on:click={confirmBuyContext}>
+            {term('BUY', 'PLAY FOR')} {display(selectedBuyCostUnits)}
           </button>
         </div>
       </dialog>
@@ -598,6 +836,60 @@
   .status.blue {
     color: #84dbff;
     border-color: #4ac6ff;
+  }
+
+  .replay-panel {
+    position: absolute;
+    left: 58px;
+    top: 306px;
+    z-index: 12;
+    width: 382px;
+    padding: 18px 20px;
+    color: #e9d8c2;
+    background: rgba(8, 7, 6, .84);
+    border: 2px solid rgba(92, 180, 205, .65);
+    box-shadow: 0 0 32px rgba(31, 151, 190, .24), inset 0 0 28px rgba(42, 12, 8, .46);
+  }
+
+  .replay-panel span,
+  .replay-panel em {
+    display: block;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .replay-panel span {
+    color: #84dbff;
+    font-size: 13px;
+  }
+
+  .replay-panel strong {
+    display: block;
+    margin: 6px 0 12px;
+    color: #fff0d7;
+    font-size: 28px;
+    letter-spacing: 3px;
+    text-shadow: 0 3px 0 #000;
+  }
+
+  .replay-panel em {
+    margin-top: 5px;
+    color: #bca58e;
+    font-size: 14px;
+    font-style: normal;
+  }
+
+  .replay-panel button {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px 16px;
+    color: #071014;
+    font-size: 18px;
+    font-weight: 1000;
+    letter-spacing: 3px;
+    background: linear-gradient(#93efff, #1f95b5);
+    border: 2px solid rgba(230, 255, 255, .72);
+    box-shadow: 0 0 24px rgba(85, 220, 255, .32);
   }
 
   .sound-toggle {
