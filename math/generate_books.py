@@ -250,13 +250,17 @@ def write_config_files(index: dict, summaries: dict[str, dict]) -> None:
         ],
         "betModes": [{"name": mode.name, "cost": mode.cost, "isFeature": mode.is_feature, "isBuyBonus": mode.is_buybonus} for mode in config.bet_modes],
     }
-    file_hashes = {
-        path.name: file_sha256(path)
-        for path in [*BOOK_DIR.glob("*.jsonl"), *BOOK_DIR.glob("*.jsonl.zst"), *LOOKUP_DIR.glob("*.csv")]
-    }
     (PUBLISH_DIR / "config_math.json").write_text(json.dumps(config_math, indent=2), encoding="utf-8")
     (PUBLISH_DIR / "config_fe.json").write_text(json.dumps(config_fe, indent=2), encoding="utf-8")
+    file_hashes = {path.name: file_sha256(path) for path in sorted(PUBLISH_DIR.glob("*")) if path.is_file() and path.name != "config.json"}
     (PUBLISH_DIR / "config.json").write_text(json.dumps({**index, "fileHashes": file_hashes}, indent=2), encoding="utf-8")
+
+
+def copy_publish_artifacts(index: dict) -> None:
+    for mode in MODES:
+        event_file = next(item["events"] for item in index["modes"] if item["name"] == mode)
+        shutil.copy2(BOOK_DIR / event_file, PUBLISH_DIR / event_file)
+        shutil.copy2(LOOKUP_DIR / f"lookUpTable_{mode}.csv", PUBLISH_DIR / f"lookUpTable_{mode}.csv")
 
 
 def main() -> None:
@@ -273,7 +277,15 @@ def main() -> None:
         path.unlink()
     for path in [*LOOKUP_DIR.glob("lookUpTable_*.csv"), *LOOKUP_DIR.glob("lookUpTableIdToCriteria_*.csv"), *LOOKUP_DIR.glob("lookUpTableSegmented_*.csv")]:
         path.unlink()
-    for path in [*PUBLISH_DIR.glob("force*.json"), *PUBLISH_DIR.glob("config*.json"), PUBLISH_DIR / "math_summary.json"]:
+    for path in [
+        *PUBLISH_DIR.glob("books_*.jsonl"),
+        *PUBLISH_DIR.glob("books_*.jsonl.zst"),
+        *PUBLISH_DIR.glob("lookUpTable_*.csv"),
+        *PUBLISH_DIR.glob("force*.json"),
+        *PUBLISH_DIR.glob("config*.json"),
+        PUBLISH_DIR / "math_summary.json",
+        PUBLISH_DIR / "index.json",
+    ]:
         if path.exists():
             path.unlink()
     write_reels()
@@ -300,10 +312,11 @@ def main() -> None:
             for mode in MODES
         ],
     }
+    copy_publish_artifacts(index)
     (PUBLISH_DIR / "force.json").write_text(json.dumps(combined_force, indent=2), encoding="utf-8")
     (PUBLISH_DIR / "math_summary.json").write_text(json.dumps(summaries, indent=2), encoding="utf-8")
-    write_config_files(index, summaries)
     (PUBLISH_DIR / "index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
+    write_config_files(index, summaries)
     frontend_index = {
         "gameId": config.game_id,
         "workingName": config.working_name,

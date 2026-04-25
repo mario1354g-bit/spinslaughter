@@ -26,25 +26,22 @@
     }
   ],
   "fileHashes": {
-    "books_warpath_buy_12.jsonl": "862c59a9efa74d6d5eb507aa104508de72923673e0332f8c1e220ae097cd4e59",
-    "books_warpath_buy_10.jsonl": "0a2b61b2168e05fc30ed83a2b74c45e04bbb56c5e2e958cdbfddf9a0047e481c",
-    "books_base.jsonl": "715187bf7cb1a6d76bb1defb4e82084283ed63e64a765d6e6ddcfed26420743e",
-    "books_warpath_buy_8.jsonl": "837ec114c9948f792c7bcd7a7a8ee4ada55a670d44e1d2723f61a54350758604",
     "books_base.jsonl.zst": "57f86d0acc6e72db210c049da2bc0aa5478fea591a53bdfb9e8c7bf9e8a59044",
-    "books_warpath_buy_8.jsonl.zst": "669b39d8c1b3e2783a730a752c201c1192b472783cd326a0730011e85b492dfe",
     "books_warpath_buy_10.jsonl.zst": "b8bcd45c1f259859bf4d411269c055b6b4b823cbc8bd8312b677f5560d263e28",
     "books_warpath_buy_12.jsonl.zst": "10c1c452d7ac09283a8067c6b5e793b70df3977981271ceef51329112d5cb3d8",
-    "lookUpTableSegmented_warpath_buy_10.csv": "4cf4867c59e7d52f3172552f5c09970a3e53662451bdd7120f4d23de65c591e6",
-    "lookUpTableIdToCriteria_base.csv": "9480074b5adcefe70ad9bb12f7321c120aeae3d6d0873255ba65a478dff0fdf3",
-    "lookUpTableSegmented_base.csv": "ac5aff220ef2fcbd71c8027445b81f1c376a4ce08248d46bab1b89efc6a29f14",
+    "books_warpath_buy_8.jsonl.zst": "669b39d8c1b3e2783a730a752c201c1192b472783cd326a0730011e85b492dfe",
+    "config_fe.json": "63b76d524f3fae750e03bf498379a8f7dd242f79d4d392ba5778b99ae01fa60f",
+    "config_math.json": "00c9466bd45f4afa318608ef5854095590a255f823c1bfc596766e6af1af2435",
+    "force.json": "8ade4d6d1bba2d49ea0b70de8561a180bc97a4276647bbeb9bd0e897e2e0c2a4",
+    "force_base.json": "f8f7e20d64f7dc8895bc368050b18a86593a340fdfcd3b4cec10c1dac6aadefd",
+    "force_warpath_buy_10.json": "5bfafe937c4fd4a39d7230e62921f82ae86a5f14ef012ae8f19d5351c9e05b5e",
+    "force_warpath_buy_12.json": "241ef99c57c653acece64d12eb7aab2240bce8b515f955a849043512ade4d7ff",
+    "force_warpath_buy_8.json": "91f6ce33e003f8429bea50c82ff6d265ae8ef91e18580810ab4cb29ce0f4f90b",
+    "index.json": "5d7a7974019b243fe44d42d6d06a34bc6ab4ad8bd06f8e80f65f0568bcb3b5b2",
+    "lookUpTable_base.csv": "0ae3171d4079a724a502840086d4710f0271cca22fb17ca4ab0b01a751a1be94",
     "lookUpTable_warpath_buy_10.csv": "43f4839eae02a272098a0c4924d17e399b179059d4d47621d15b876466857043",
-    "lookUpTableIdToCriteria_warpath_buy_8.csv": "6e8bf60f2355acac9effbcfad518c4a8b95b527f263be049c06aef421be5b2ba",
-    "lookUpTableIdToCriteria_warpath_buy_12.csv": "6e8bf60f2355acac9effbcfad518c4a8b95b527f263be049c06aef421be5b2ba",
-    "lookUpTableSegmented_warpath_buy_8.csv": "d451f2a5cb5a369961302df2189016d505d2318e831d37576ebd6584f47bfe38",
-    "lookUpTable_warpath_buy_8.csv": "998206b9c5846f9547c1b5794d22f8aeecde4ba5fd56b17d98524977002efbb0",
-    "lookUpTableSegmented_warpath_buy_12.csv": "fadf47a13b835b50a7276337f7f2301a4ae99582d50e5ac4fb1b69b821f07fe4",
     "lookUpTable_warpath_buy_12.csv": "e3d7ef8683c06b21bbd77a5364ff1480b631ad1184f82368a73e9d11149cab70",
-    "lookUpTableIdToCriteria_warpath_buy_10.csv": "6e8bf60f2355acac9effbcfad518c4a8b95b527f263be049c06aef421be5b2ba",
-    "lookUpTable_base.csv": "0ae3171d4079a724a502840086d4710f0271cca22fb17ca4ab0b01a751a1be94"
+    "lookUpTable_warpath_buy_8.csv": "998206b9c5846f9547c1b5794d22f8aeecde4ba5fd56b17d98524977002efbb0",
+    "math_summary.json": "8d8fbe278a8c321fa3e8aee3799237ce8448da2614963f775692b849fe0b1f37"
   }
 }
