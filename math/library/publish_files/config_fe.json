@@ -50,32 +50,32 @@
     },
     {
       "id": "LS",
-      "name": "Latina Lady Soldier",
-      "asset": "symbols/symbol_high_lady_soldier.png",
+      "name": "Crimson Commander",
+      "asset": "symbols/symbol_high_crimson_commander.png",
       "tier": "premium"
     },
     {
       "id": "TO",
-      "name": "Old Desert Fighter",
-      "asset": "symbols/symbol_high_taliban_old.png",
+      "name": "Desert Elder",
+      "asset": "symbols/symbol_high_desert_elder.png",
       "tier": "high"
     },
     {
       "id": "IY",
-      "name": "Young Iraqi Fighter",
-      "asset": "symbols/symbol_high_iraqi_young.png",
+      "name": "Young Raider",
+      "asset": "symbols/symbol_high_young_raider.png",
       "tier": "high"
     },
     {
       "id": "IS",
-      "name": "Iraqi Soldier",
-      "asset": "symbols/symbol_high_iraqi_soldier.png",
+      "name": "Desert Commander",
+      "asset": "symbols/symbol_high_desert_commander.png",
       "tier": "high"
     },
     {
       "id": "WS",
-      "name": "Field Woman Soldier",
-      "asset": "symbols/symbol_high_woman_soldier.png",
+      "name": "Field Operative",
+      "asset": "symbols/symbol_high_field_operative.png",
       "tier": "high"
     },
     {

@@ -41,11 +41,11 @@
   const LOCAL_BET_LEVELS = BET_LEVELS.map(toMoneyUnits);
 
   const PAYTABLE_ROWS = [
-    { symbol: 'Latina Lady Soldier', values: ['0.80', '2.50', '8.00', '30.00'] },
-    { symbol: 'Old Desert Fighter', values: ['0.55', '1.80', '5.50', '18.00'] },
-    { symbol: 'Young Iraqi Fighter', values: ['0.45', '1.40', '4.20', '13.00'] },
-    { symbol: 'Iraqi Soldier', values: ['0.35', '1.05', '3.20', '10.00'] },
-    { symbol: 'Field Woman Soldier', values: ['0.30', '0.85', '2.50', '8.00'] },
+    { symbol: 'Crimson Commander', values: ['0.80', '2.50', '8.00', '30.00'] },
+    { symbol: 'Desert Elder', values: ['0.55', '1.80', '5.50', '18.00'] },
+    { symbol: 'Young Raider', values: ['0.45', '1.40', '4.20', '13.00'] },
+    { symbol: 'Desert Commander', values: ['0.35', '1.05', '3.20', '10.00'] },
+    { symbol: 'Field Operative', values: ['0.30', '0.85', '2.50', '8.00'] },
     { symbol: 'K', values: ['0.18', '0.45', '1.20', '3.20'] },
     { symbol: 'Q', values: ['0.15', '0.38', '1.00', '2.70'] },
     { symbol: 'J', values: ['0.12', '0.30', '0.80', '2.20'] },
